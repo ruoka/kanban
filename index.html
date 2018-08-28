@@ -1,0 +1,123 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<title>Kanban</title>
+
+<style>
+
+body {
+	width: 1112px;
+	margin: auto;
+	padding: 20px;
+    background-color: black;
+}
+
+section.column {
+    width: 370px;
+    height: 3700px;
+    padding: 0;
+    margin: 0;
+    float: left;
+}
+
+section.column header {
+    height: 50px;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid white;
+    font: 15px "Comic Sans MS", sans-serif;
+    color: white;
+}
+
+section#doing {
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+}
+
+textarea.note {
+    resize: both;
+    overflow: auto;
+    width: 250px;
+    height: 250px;
+    max-height: 350px;
+    vertical-align: top;
+    padding: 5px;
+    margin: 5px 5px 0px 5px;
+    background-color: yellow;
+    border: none;
+    font: 15px "Comic Sans MS", sans-serif;
+    color: black;
+}
+
+</style>
+
+<script>
+
+function dragstart(event){
+    event.dataTransfer.effectAllowed = 'move';
+    event.dataTransfer.setData("text/plain", event.target.id);
+}
+
+function dragover(event) {
+    event.preventDefault();
+}
+
+function drop(event){
+    event.preventDefault();
+    const id = event.dataTransfer.getData("text");
+    const note = document.getElementById(id);
+    if(event.target.className == "column")
+        event.target.appendChild(note);
+    else if(event.target.className == "note")
+        event.target.parentNode.insertBefore(note, event.target);
+    event.dataTransfer.clearData();
+}
+
+var sequnce = 0;
+
+function createnote() {
+    event.preventDefault();
+    if(event.target.className != "note")
+        if(confirm("Do you want to create a new note?")) {
+            var element = document.createElement("textarea");
+            element.id = ++sequnce;
+            element.setAttribute("class", "note");
+            element.setAttribute("placeholder", "Your next tasks");
+            element.setAttribute("title", "Right click the note to delete it!");
+            element.setAttribute("oncontextmenu", "deletenote()");
+            element.setAttribute("draggable", "true");
+            element.setAttribute("ondragstart", "dragstart(event)");
+            document.getElementById("todo").appendChild(element);
+        }
+}
+
+function deletenote() {
+    event.preventDefault();
+    if(confirm("Do you want to delete this note?")) {
+        var id = event.target.id;
+        document.getElementById(id).remove();
+    }
+}
+
+</script>
+
+</head>
+<body title="Right click the board to create new note!" oncontextmenu="createnote()">
+
+<section id="todo" class="column" ondrop="drop(event)" ondragover="dragover(event)">
+    <header><h1>Todo</h1></header>
+</section>
+
+<section id="doing" class="column" ondrop="drop(event)" ondragover="dragover(event)">
+    <header><h1>Going</h1></header>
+</section>
+
+<section id="done" class="column" ondrop="drop(event)" ondragover="dragover(event)">
+    <header><h1>Done</h1></header>
+</section>
+
+</body>
+</html>
